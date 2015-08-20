@@ -1,3 +1,9 @@
 ---
-- name: Restart Collectd
-  service: name=collectd state=restarted
+- name: restart collectd-docker
+  docker:
+    name: collectd
+    image: collectd
+    state: restarted
+    docker_api_version: "{{ docker_api_version }}"
+
+

@@ -1,5 +1,12 @@
 ---
-collectd_version: "5.4.0-3ubuntu2"
-collectd_install_recommends: True
-collectd_interval: 10
-collectd_load_plugins: []
+# defaults file for collectd
+
+collectd_docker_file: "/var/lib/collectd-docker/Dockerfile"
+collectd_conf_file: "/var/lib/collectd-docker/collectd.conf"
+collectd_run_script_file: "/var/lib/collectd-docker/run.sh"
+collectd_docker_install_dir: /var/lib/collectd-docker
+collectd_log_file: "/var/log/collectd.log"
+# port opened on the docker host port and container port
+collectd_host_port: 25826
+collectd_container_port: 25826
+

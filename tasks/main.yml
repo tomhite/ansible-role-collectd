@@ -1,10 +1,65 @@
 ---
-- name: Install Collectd
-  apt: pkg=collectd={{ collectd_version }}
-       install_recommends={{ collectd_install_recommends }}
-       state=present
+# tasks file for collectd
+ 
+- name: make collectd config dir
+  file: path={{ collectd_docker_install_dir }} mode=a+rwx state=directory
 
-- name: Configure Collectd
-  template: src=collectd.conf.j2 dest=/etc/collectd/collectd.conf
-  notify:
-    - Restart Collectd
+
+- name: Setup and copy Main CollectD Configuration onto collectd-docker directory
+  template: src=collectd.conf.j2
+            dest={{ collectd_conf_file }}
+            backup=yes
+            owner=root
+            group=root
+            mode=0644
+  register: return_from_task
+  tags:
+   - collectd_push_conf_file
+   
+- name: debug previous task
+  debug: var=return_from_task 
+  
+- name: copy Docker file
+  copy: src=../../../../containers/docker/collectd/Dockerfile dest={{ collectd_docker_install_dir }} owner=root group=root mode=a+rwx
+  register: return_from_task
+  tags:
+   - collectd_push_Dockerfile
+   
+- name: debug previous task
+  debug: var=return_from_task 
+   
+- name: copy run script
+  copy: src=../../../../containers/docker/collectd/run.sh dest={{ collectd_docker_install_dir }} owner=root group=root mode=a+rwx
+  register: return_from_task
+  tags:
+   - collectd_push_run_script_file
+   
+- name: debug previous task
+  debug: var=return_from_task 
+
+- name: docker cmdline
+  shell: docker build -t collectd .
+  args:
+    chdir: "{{ collectd_docker_install_dir }}"
+  register: return_from_task
+  tags:
+   - build_collectd_docker_image
+   
+- name: debug previous task
+  debug: var=return_from_task 
+
+- name: docker cmdline
+  shell: docker run -d collectd
+  args:
+    chdir: "{{ collectd_docker_install_dir }}"
+  register: return_from_task
+  tags:
+   - run_collectd_docker_image
+
+- name: debug previous task
+  debug: var=return_from_task 
+
+
+  
+
+

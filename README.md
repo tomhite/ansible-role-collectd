@@ -1,18 +1,39 @@
-# ansible-collectd
+# Ansible Role: collectd
+Ansible role to install and configure CollectD
 
-An Ansible role for installing [Collectd](http://collectd.org).
+## Requirements
 
-## Role Variables
+## Role Variables in default
 
-- `collectd_version` - Collectd version
-- `collectd_install_recommends` - A flag passed to the `install_recommends` option of the Ansible `apt` module (default: `True`).
-- `collectd_interval` - Collectd metrics collection interval (default: `10`)
-- `collectd_load_plugins` - Collectd plugins to load (see [defaults](./defaults/main.yml))
+Variable indicating where the colectd docker container files are pushed to for building image on remote server
+collectd_docker_install_dir: /var/lib/collectd-docker
+
+Variable indicating where the collectd docker file and location for building image on remote server
+collectd_docker_file: "/var/lib/collectd-docker/Dockerfile"
+
+Target config file location and name WITHIN the docker namespace
+collectd_conf_file: "/var/lib/collectd-docker/collectd.conf"
+
+Target directory and file name for run script when the image is run - WITHIN the docker namespace
+collectd_run_script_file: "/var/lib/collectd-docker/run.sh"
+
+Target log file location and name WITHIN the docker namespace
+collectd_log_file: "/var/log/collectd.log"
+
+Version of docker
+docker_api_version: 1.18
+
+Port opened on the docker host port and container port
+collectd_host_port: 25826
+collectd_container_port: 25826
+
+## Dependencies
 
 ## Example Playbook
 
-By default, this role does not load any Collectd plugins. Most likely, you will want some plugins enabled in order to collect metrics.
+## License
 
-In order to use any Collectd plugins with this role, simply list the plugins you want enabled as a list via `collectd_load_plugins`. Then, generate templates for each plugin configuration file and place the rendered template in `/etc/collectd/collectd.conf.d`.
+## Author Information
 
-See the `azavea.graphite` [examples](https://github.com/azavea/ansible-graphite/tree/develop/examples) directory for a more complete example.
+
+

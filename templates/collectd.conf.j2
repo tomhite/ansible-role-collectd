@@ -1,26 +1,57 @@
-# Config file for collectd(1).
-#
-# Some plugins need additional configuration and are disabled by default.
-# Please read collectd.conf(5) for details.
-#
-# You should also read /usr/share/doc/collectd-core/README.Debian.plugins
-# before enabling any more plugins.
+# {{ ansible_managed }}
 
-FQDNLookup true
-#BaseDir "/var/lib/collectd"
-#PluginDir "/usr/lib/collectd"
-#TypesDB "/usr/share/collectd/types.db" "/etc/collectd/my_types.db"
-
-Interval {{ collectd_interval }}
-
-#Timeout 2
-#ReadThreads 5
-#WriteThreads 5
-
-{% for plugin in collectd_load_plugins %}
-LoadPlugin {{ plugin }}
+{% if collectd_global is defined %}
+{% for element in collectd_global %}
+{{ element.directive }}
 {% endfor %}
+{% endif %}
 
-<Include "/etc/collectd/collectd.conf.d">
-	Filter "*.conf"
-</Include>
+## Always load syslog plugin so we can investigate issues
+
+LoadPlugin logfile
+LoadPlugin syslog
+LoadPlugin csv
+LoadPlugin apache
+LoadPlugin cpu
+#LoadPlugin load
+LoadPlugin memory
+LoadPlugin processes
+#LoadPlugin write_graphite
+
+<Plugin "logfile">
+  LogLevel "info"
+  File "/var/log/collectd.log"
+  Timestamp true
+</Plugin>
+
+<Plugin "syslog">
+  LogLevel "info"
+</Plugin>
+
+<Plugin "csv">
+  DataDir "/var/lib/collectd/csv"
+  StoreRates true
+</Plugin>
+
+<Plugin apache>
+    <Instance "www1">
+     URL "http://localhost/mod_status?auto";
+   </Instance>
+</Plugin>
+
+# needs fixing
+#<Plugin write_graphite>
+#    <Node "graphing">
+#        Host "localhost"
+#        Port "2003"
+#        Protocol "tcp"
+#        LogSendErrors true
+#        Prefix "collectd."
+#        StoreRates true
+#        AlwaysAppendDS false
+#        EscapeCharacter "_"
+#    </Node>
+#</Plugin>
+
+
+
